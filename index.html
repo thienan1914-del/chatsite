@@ -1,82 +1,130 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CHATSITE Gaming</title>
-<style>
-  body {
-    background-color: #121212;
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    padding: 2rem;
-  }
-  h1 {
-    font-size: 4rem;
-    font-weight: 900;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 3rem;
-    font-family: 'Arial Black', Gadget, sans-serif;
-    color: #00ff99;
-    text-shadow: 0 0 10px #00ff99;
-  }
-  .game-keys {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-  .key {
-    background: #222;
-    border-radius: 10px;
-    box-shadow: 0 0 5px #00ff99;
-    width: 80px;
-    height: 80px;
-    line-height: 80px;
-    font-size: 2rem;
-    font-weight: bold;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.3s ease;
-    color: #00ff99;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHATSITE Gaming</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #eee;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+      font-family: 'Arial Black', Gadget, sans-serif;
+      color: #00ff99;
+      text-shadow: 0 0 10px #00ff99;
+    }
+    .game-keys {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .key {
+      background: #222;
+      border-radius: 10px;
+      box-shadow: 0 0 5px #00ff99;
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      color: #00ff99;
+    }
+    .post-form {
+      margin-top: 3rem;
+      background-color: #333;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ff99;
+    }
+    .post-form input, .post-form textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #00ff99;
+      border-radius: 5px;
+      background-color: #222;
+      color: #fff;
+    }
+    .post-form button {
+      width: 100%;
+      padding: 1rem;
+      background-color: #00ff99;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #121212;
+    }
+    .post-form button:hover {
+      background-color: #00cc7a;
+    }
+  </style>
 </head>
 <body>
+
   <h1>CHATSITE</h1>
+
   <div class="game-keys">
-    <div class="key">W</div>
-    <div class="key">A</div>
-    <div class="key">S</div>
-    <div class="key">D</div>
-    <div class="key">↑</div>
-    <div class="key">←</div>
-    <div class="key">↓</div>
-    <div class="key">→</div>
-    <div class="key">Space</div>
+    <div class="key" id="keyW">W</div>
+    <div class="key" id="keyA">A</div>
+    <div class="key" id="keyS">S</div>
+    <div class="key" id="keyD">D</div>
+    <div class="key" id="keySpace">Space</div>
   </div>
 
-<script>
-  // Danh sách màu để đổi
-  const colors = ['#FF3C38', '#38FF8A', '#3C83FF', '#FFD138', '#FF38E0', '#38FFF7'];
+  <div class="post-form">
+    <h2>Đăng bài mới</h2>
+    <form id="postForm">
+      <input type="text" id="title" placeholder="Tiêu đề" required>
+      <textarea id="content" rows="4" placeholder="Nội dung bài viết" required></textarea>
+      <button type="submit">Đăng bài</button>
+    </form>
+  </div>
 
-  // Lấy tất cả các phím
-  const keys = document.querySelectorAll('.key');
+  <script>
+    // Danh sách màu để đổi
+    const colors = ['#FF3C38', '#38FF8A', '#3C83FF', '#FFD138', '#FF38E0', '#38FFF7'];
 
-  keys.forEach(key => {
-    key.addEventListener('click', () => {
-      // Lấy màu ngẫu nhiên
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      // Đổi màu nền phím
-      key.style.backgroundColor = randomColor;
-      // Đổi màu chữ tương phản
-      key.style.color = '#121212';
-      // Thêm bóng mờ màu
-      key.style.boxShadow = `0 0 15px ${randomColor}`;
+    // Lấy tất cả các phím
+    const keys = document.querySelectorAll('.key');
+
+    keys.forEach(key => {
+      key.addEventListener('click', () => {
+        // Lấy màu ngẫu nhiên
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        // Đổi màu nền phím
+        key.style.backgroundColor = randomColor;
+        // Đổi màu chữ tương phản
+        key.style.color = '#121212';
+        // Thêm bóng mờ màu
+        key.style.boxShadow = `0 0 15px ${randomColor}`;
+      });
     });
-  });
-</script>
+
+    // Xử lý form đăng bài
+    const postForm = document.getElementById('postForm');
+    postForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const content = document.getElementById('content').value;
+      alert(`Đã đăng bài:\nTiêu đề: ${title}\nNội dung: ${content}`);
+      // Reset form
+      postForm.reset();
+    });
+  </script>
+
 </body>
 </html>
