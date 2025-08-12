@@ -1,9 +1,22 @@
+// Khởi tạo Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyC5sIo8_htHOwCq2b25d7BYsZoc9TJP3SI",
+  authDomain: "chatsite-2ba82.firebaseapp.com",
+  databaseURL: "https://chatsite-2ba82-default-rtdb.firebaseio.com",
+  projectId: "chatsite-2ba82",
+  storageBucket: "chatsite-2ba82.appspot.com",
+  messagingSenderId: "655887521279",
+  appId: "1:655887521279:web:0b63a1f9530996a154c3ca"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Load users và currentUser
+  // Load users và currentUser từ localStorage (đăng nhập đăng ký vẫn localStorage)
   const users = JSON.parse(localStorage.getItem('users') || '{}');
   const currentUser = localStorage.getItem('currentUser');
 
-  // Hiển thị form đăng bài nếu đã đăng nhập
   function showPostForm() {
     document.getElementById('loginForm').style.display = 'none';
     document.getElementById('registerForm').style.display = 'none';
@@ -13,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('registerBtn').style.display = 'none';
   }
 
-  // Hiển thị form đăng nhập
   function showLoginForm() {
     document.getElementById('loginForm').style.display = 'block';
     document.getElementById('registerForm').style.display = 'none';
@@ -30,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Đăng ký
-  document.getElementById('register').addEventListener('submit', (e) => {
+  document.getElementById('register').addEventListener('submit', e => {
     e.preventDefault();
     const username = document.getElementById('registerUsername').value.trim();
     const password = document.getElementById('registerPassword').value.trim();
@@ -46,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Đăng nhập
-  document.getElementById('login').addEventListener('submit', (e) => {
+  document.getElementById('login').addEventListener('submit', e => {
     e.preventDefault();
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
@@ -76,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('loginForm').style.display = 'none';
   });
 
-  // Hàm tạo bài đăng HTML
+  // Tạo post HTML
   function createPostElement(post) {
     const postDiv = document.createElement('div');
     postDiv.className = 'post';
@@ -91,20 +103,25 @@ document.addEventListener('DOMContentLoaded', () => {
     return postDiv;
   }
 
-  // Load bài đăng từ localStorage và hiển thị
+  // Load posts từ Firebase realtime
   function loadPosts() {
-    const posts = JSON.parse(localStorage.getItem('posts') || '[]');
     const postsContainer = document.getElementById('posts');
     postsContainer.innerHTML = '';
-    posts.forEach(post => {
-      postsContainer.appendChild(createPostElement(post));
+
+    database.ref('posts').on('value', snapshot => {
+      postsContainer.innerHTML = ''; // xóa cũ
+      const posts = snapshot.val();
+      if (posts) {
+        Object.values(posts).forEach(post => {
+          postsContainer.appendChild(createPostElement(post));
+        });
+      }
     });
   }
-
   loadPosts();
 
   // Xử lý đăng bài
-  document.getElementById('post').addEventListener('submit', (e) => {
+  document.getElementById('post').addEventListener('submit', e => {
     e.preventDefault();
 
     if (!localStorage.getItem('currentUser')) {
@@ -115,8 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = document.getElementById('postTitle').value.trim();
     const content = document.getElementById('postContent').value.trim();
     const file = document.getElementById('postFile').files[0];
-
-    const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const author = localStorage.getItem('currentUser');
 
     if (file) {
       const reader = new FileReader();
@@ -125,12 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
           title,
           content,
           image: event.target.result,
-          author: localStorage.getItem('currentUser')
+          author
         };
-        posts.push(newPost);
-        localStorage.setItem('posts', JSON.stringify(posts));
-        document.getElementById('posts').appendChild(createPostElement(newPost));
-        e.target.reset();
+        database.ref('posts').push(newPost).then(() => {
+          alert('Đăng bài thành công!');
+          e.target.reset();
+        });
       };
       reader.readAsDataURL(file);
     } else {
@@ -138,16 +154,16 @@ document.addEventListener('DOMContentLoaded', () => {
         title,
         content,
         image: '',
-        author: localStorage.getItem('currentUser')
+        author
       };
-      posts.push(newPost);
-      localStorage.setItem('posts', JSON.stringify(posts));
-      document.getElementById('posts').appendChild(createPostElement(newPost));
-      e.target.reset();
+      database.ref('posts').push(newPost).then(() => {
+        alert('Đăng bài thành công!');
+        e.target.reset();
+      });
     }
   });
 
-  // Hiệu ứng LED cho các phím bên trái và phải (giống nút Switch)
+  // Hiệu ứng LED cho các phím
   const keys = document.querySelectorAll('.key');
   const colors = ['#FF3C38', '#38FF8A', '#3C83FF', '#FFD138', '#FF38E0', '#38FFF7'];
 
