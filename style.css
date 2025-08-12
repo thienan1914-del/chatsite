@@ -1,53 +1,73 @@
-/* Nền đổi màu mượt */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    transition: background-color 0.5s linear;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #eee;
+  text-align: center;
+  padding: 2rem;
 }
 
-/* Chữ tiêu đề đổi màu RGB nhẹ nhàng */
-@keyframes rgbText {
-    0% { color: red; }
-    16% { color: orange; }
-    33% { color: yellow; }
-    50% { color: green; }
-    66% { color: blue; }
-    83% { color: indigo; }
-    100% { color: violet; }
+h1 {
+  font-size: 4rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+  font-family: 'Arial Black', Gadget, sans-serif;
+  color: #00ff99;
+  text-shadow: 0 0 10px #00ff99;
 }
 
-h1, h2, h3 {
-    animation: rgbText 5s infinite;
+nav button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 
-.post {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    background-color: rgba(255,255,255,0.9);
+nav button:hover {
+  background-color: #666;
 }
 
-.post img {
-    max-width: 300px;
-    display: block;
-    margin-top: 10px;
+.form {
+  display: none;
+  margin-bottom: 20px;
 }
 
-input, textarea {
-    width: 300px;
-    margin-bottom: 10px;
+#postForm {
+  margin-top: 20px;
 }
 
-button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    cursor: pointer;
-    border-radius: 4px;
+#postForm input, #postForm textarea {
+  width: 80%;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
 }
 
-button:hover {
-    background-color: #0056b3;
+#postForm button {
+  padding: 10px 20px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.key {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  margin: 10px;
+  background-color: #333;
+  color: #fff;
+  line-height: 60px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.key:hover {
+  background-color: #555;
 }
