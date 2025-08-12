@@ -44,6 +44,6 @@ document.getElementById('post').addEventListener('submit', (e) => {
   const content = document.getElementById('postContent').value;
   const file = document.getElementById('postFile').files[0];
   const postDiv = document.createElement('div');
-  postDiv.innerHTML = `<h3>${title}</h3><p>${
+  postDiv.innerHTML = `<h3>${title
 ::contentReference[oaicite:0]{index=0}
  
