@@ -2,7 +2,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyC5sIo8_htHOwCq2b25d7BYsZoc9TJP3SI",
   authDomain: "chatsite-2ba82.firebaseapp.com",
-  databaseURL: databaseURL: "https://chatsite-2ba82-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  databaseURL: "https://chatsite-2ba82-default-rtdb.asia-southeast1.firebasedatabase.app/",
   projectId: "chatsite-2ba82",
   storageBucket: "chatsite-2ba82.appspot.com",
   messagingSenderId: "655887521279",
@@ -181,4 +181,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
 
