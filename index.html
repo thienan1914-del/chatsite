@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CHATSITE Gaming</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -21,8 +21,8 @@
     <section id="loginForm" class="form">
       <h2>Đăng nhập</h2>
       <form id="login">
-        <input type="text" id="loginUsername" placeholder="Tên người dùng" required>
-        <input type="password" id="loginPassword" placeholder="Mật khẩu" required>
+        <input type="text" id="loginUsername" placeholder="Tên người dùng" required />
+        <input type="password" id="loginPassword" placeholder="Mật khẩu" required />
         <button type="submit">Đăng nhập</button>
       </form>
     </section>
@@ -30,8 +30,8 @@
     <section id="registerForm" class="form">
       <h2>Đăng ký</h2>
       <form id="register">
-        <input type="text" id="registerUsername" placeholder="Tên người dùng" required>
-        <input type="password" id="registerPassword" placeholder="Mật khẩu" required>
+        <input type="text" id="registerUsername" placeholder="Tên người dùng" required />
+        <input type="password" id="registerPassword" placeholder="Mật khẩu" required />
         <button type="submit">Đăng ký</button>
       </form>
     </section>
@@ -39,9 +39,9 @@
     <section id="postForm" style="display: none;">
       <h2>Đăng bài mới</h2>
       <form id="post">
-        <input type="text" id="postTitle" placeholder="Tiêu đề" required>
+        <input type="text" id="postTitle" placeholder="Tiêu đề" required />
         <textarea id="postContent" placeholder="Nội dung" required></textarea>
-        <input type="file" id="postFile">
+        <input type="file" id="postFile" />
         <button type="submit">Đăng</button>
       </form>
       <div id="posts"></div>
@@ -56,7 +56,11 @@
     </section>
   </main>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <!-- Your custom script -->
   <script src="script.js" defer></script>
 </body>
 </html>
-
