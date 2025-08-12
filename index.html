@@ -1,21 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Blog của tôi</title>
-    <meta name="description" content="Trang blog cá nhân chia sẻ bài viết và hình ảnh">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CHATSITE - Blog Gaming</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #eee;
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 4rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    color: #00ffd5;
+    text-shadow: 0 0 15px #00ffd5;
+  }
+
+  .post {
+    max-width: 600px;
+    margin: 0 auto 60px auto;
+    background: rgba(0,0,0,0.4);
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #00ffd5;
+    text-align: left;
+  }
+
+  .post h2 {
+    margin-top: 0;
+    color: #00ffd5;
+  }
+
+  .post p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: #ddd;
+  }
+
+  .game-keys {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .key {
+    background: #111;
+    border: 2px solid #00ffd5;
+    border-radius: 8px;
+    padding: 15px 25px;
+    font-size: 2rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s, color 0.3s;
+    box-shadow: 0 0 5px #00ffd5;
+    color: #eee;
+  }
+
+  .key:hover {
+    background-color: #00ffd5;
+    color: #111;
+  }
+</style>
 </head>
 <body>
-    <h1>Chào mừng đến Blog</h1>
-    <div id="posts"></div>
+  <h1>CHATSITE</h1>
 
-    <h2>Đăng bài mới</h2>
-    <input type="text" id="title" placeholder="Tiêu đề"><br><br>
-    <textarea id="content" placeholder="Nội dung"></textarea><br><br>
-    <input type="file" id="image"><br><br>
-    <button onclick="addPost()">Đăng</button>
+  <div class="post">
+    <h2>Bài đăng đầu tiên</h2>
+    <p>Chào mừng bạn đến với blog CHATSITE - nơi không gian gaming hội tụ. Tại đây, bạn có thể khám phá những bài viết thú vị và tương tác với các phím game ngay phía dưới.</p>
+  </div>
 
-    <script src="script.js"></script>
+  <div class="game-keys" aria-label="Game keys">
+    <div class="key">W</div>
+    <div class="key">A</div>
+    <div class="key">S</div>
+    <div class="key">D</div>
+    <div class="key">Space</div>
+    <div class="key">Shift</div>
+    <div class="key">Ctrl</div>
+    <div class="key">E</div>
+    <div class="key">Q</div>
+  </div>
+
+  <script>
+    const keys = document.querySelectorAll('.key');
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for(let i=0; i<6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    keys.forEach(key => {
+      key.addEventListener('click', () => {
+        const randomColor = getRandomColor();
+        key.style.backgroundColor = randomColor;
+        key.style.color = '#111';
+      });
+    });
+  </script>
 </body>
 </html>
