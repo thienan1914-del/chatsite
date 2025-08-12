@@ -9,10 +9,26 @@ const firebaseConfig = {
   appId: "1:655887521279:web:0b63a1f9530996a154c3ca"
 };
 
+// Import Firebase modules
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+import { getDatabase, ref, set, get, child } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
+
+// Cấu hình Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyC5sIo8_htHOwCq2b25d7BYsZoc9TJP3SI",
+  authDomain: "chatsite-2ba82.firebaseapp.com",
+  databaseURL: "https://chatsite-2ba82-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "chatsite-2ba82",
+  storageBucket: "chatsite-2ba82.appspot.com",
+  messagingSenderId: "655887521279",
+  appId: "1:655887521279:web:0b63a1f9530996a154c3ca"
+};
+
 // Khởi tạo Firebase
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app); // Khởi tạo Firebase Authentication
+const database = getDatabase(app); // Khởi tạo Firebase Realtime Database
 
 // Thiết lập trạng thái đăng nhập
 auth.onAuthStateChanged(user => {
@@ -190,4 +206,5 @@ keys.forEach(key => {
     }, 1000);
   });
 });
+
 
