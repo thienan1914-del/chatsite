@@ -1,11 +1,40 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // Lưu tài khoản khi đăng ký
-  document.getElementById('register').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const username = document.getElementById('registerUsername').value;
-    const password = document.getElementById('registerPassword').value;
+document.addEventListener('DOMContentLoaded', () => {
+  // Load users và currentUser
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
+  const currentUser = localStorage.getItem('currentUser');
 
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
+  // Hiển thị form đăng bài nếu đã đăng nhập
+  function showPostForm() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('postForm').style.display = 'block';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('registerBtn').style.display = 'none';
+  }
+
+  // Hiển thị form đăng nhập
+  function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('postForm').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('loginBtn').style.display = 'inline-block';
+    document.getElementById('registerBtn').style.display = 'inline-block';
+  }
+
+  if (currentUser) {
+    showPostForm();
+  } else {
+    showLoginForm();
+  }
+
+  // Đăng ký
+  document.getElementById('register').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = document.getElementById('registerUsername').value.trim();
+    const password = document.getElementById('registerPassword').value.trim();
+
     if (users[username]) {
       alert('Tài khoản đã tồn tại!');
       return;
@@ -13,16 +42,15 @@ document.addEventListener('DOMContentLoaded', function () {
     users[username] = password;
     localStorage.setItem('users', JSON.stringify(users));
     alert('Đăng ký thành công!');
-    this.reset();
+    e.target.reset();
   });
 
-  // Xử lý đăng nhập
-  document.getElementById('login').addEventListener('submit', function(e) {
+  // Đăng nhập
+  document.getElementById('login').addEventListener('submit', (e) => {
     e.preventDefault();
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
 
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
     if (users[username] === password) {
       localStorage.setItem('currentUser', username);
       alert('Đăng nhập thành công!');
@@ -38,77 +66,88 @@ document.addEventListener('DOMContentLoaded', function () {
     location.reload();
   });
 
-  // Hiện/ẩn form theo trạng thái đăng nhập
-  function showPostForm() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('postForm').style.display = 'block';
-    document.getElementById('logoutBtn').style.display = 'inline-block';
-  }
-  if (localStorage.getItem('currentUser')) {
-    showPostForm();
-  }
-
-  // Nút bật form đăng nhập/đăng ký
-  document.getElementById('loginBtn').onclick = () => {
+  // Nút chuyển form đăng nhập/đăng ký
+  document.getElementById('loginBtn').addEventListener('click', () => {
     document.getElementById('loginForm').style.display = 'block';
     document.getElementById('registerForm').style.display = 'none';
-  };
-  document.getElementById('registerBtn').onclick = () => {
+  });
+  document.getElementById('registerBtn').addEventListener('click', () => {
     document.getElementById('registerForm').style.display = 'block';
     document.getElementById('loginForm').style.display = 'none';
-  };
-
-  // Hiển thị bài đăng đã lưu
-  function displayPosts() {
-    const postsContainer = document.getElementById('posts');
-    postsContainer.innerHTML = '';
-    const posts = JSON.parse(localStorage.getItem('posts') || '[]');
-    posts.forEach(post => {
-      const postDiv = document.createElement('div');
-      postDiv.className = 'post';
-      postDiv.innerHTML = `
-        <h3>${post.title}</h3>
-        <p>${post.content}</p>
-        ${post.image}
-      `;
-      postsContainer.appendChild(postDiv);
-    });
-  }
-  displayPosts();
-
-  // Xử lý đăng bài
-  document.getElementById('post').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const title = document.getElementById('postTitle').value;
-    const content = document.getElementById('postContent').value;
-    const file = document.getElementById('postFile').files[0];
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const imgTag = file && file.type.startsWith('image/') ?
-        `<img src="${event.target.result}" alt="Hình ảnh" style="max-width: 300px;">` : '';
-
-      const posts = JSON.parse(localStorage.getItem('posts') || '[]');
-      posts.push({title, content, image: imgTag});
-      localStorage.setItem('posts', JSON.stringify(posts));
-
-      displayPosts();
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      const posts = JSON.parse(localStorage.getItem('posts') || '[]');
-      posts.push({title, content, image: ''});
-      localStorage.setItem('posts', JSON.stringify(posts));
-
-      displayPosts();
-    }
-    this.reset();
   });
 
-  // Hiệu ứng LED phím game
+  // Hàm tạo bài đăng HTML
+  function createPostElement(post) {
+    const postDiv = document.createElement('div');
+    postDiv.className = 'post';
+    const imgTag = post.image ? `<img src="${post.image}" alt="Hình ảnh" style="max-width: 300px;">` : '';
+    postDiv.innerHTML = `
+      <h3>${post.title}</h3>
+      <p>${post.content}</p>
+      ${imgTag}
+      <hr>
+      <small>Đăng bởi: ${post.author}</small>
+    `;
+    return postDiv;
+  }
+
+  // Load bài đăng từ localStorage và hiển thị
+  function loadPosts() {
+    const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const postsContainer = document.getElementById('posts');
+    postsContainer.innerHTML = '';
+    posts.forEach(post => {
+      postsContainer.appendChild(createPostElement(post));
+    });
+  }
+
+  loadPosts();
+
+  // Xử lý đăng bài
+  document.getElementById('post').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!localStorage.getItem('currentUser')) {
+      alert('Bạn cần đăng nhập để đăng bài.');
+      return;
+    }
+
+    const title = document.getElementById('postTitle').value.trim();
+    const content = document.getElementById('postContent').value.trim();
+    const file = document.getElementById('postFile').files[0];
+
+    const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const newPost = {
+          title,
+          content,
+          image: event.target.result,
+          author: localStorage.getItem('currentUser')
+        };
+        posts.push(newPost);
+        localStorage.setItem('posts', JSON.stringify(posts));
+        document.getElementById('posts').appendChild(createPostElement(newPost));
+        e.target.reset();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const newPost = {
+        title,
+        content,
+        image: '',
+        author: localStorage.getItem('currentUser')
+      };
+      posts.push(newPost);
+      localStorage.setItem('posts', JSON.stringify(posts));
+      document.getElementById('posts').appendChild(createPostElement(newPost));
+      e.target.reset();
+    }
+  });
+
+  // Hiệu ứng LED cho các phím bên trái và phải (giống nút Switch)
   const keys = document.querySelectorAll('.key');
   const colors = ['#FF3C38', '#38FF8A', '#3C83FF', '#FFD138', '#FF38E0', '#38FFF7'];
 
@@ -118,6 +157,11 @@ document.addEventListener('DOMContentLoaded', function () {
       key.style.backgroundColor = randomColor;
       key.style.color = '#121212';
       key.style.boxShadow = `0 0 15px ${randomColor}`;
+      setTimeout(() => {
+        key.style.backgroundColor = '';
+        key.style.color = '';
+        key.style.boxShadow = '';
+      }, 1000);
     });
   });
 });
