@@ -1,18 +1,7 @@
-// Khởi tạo Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyC5sIo8_htHOwCq2b25d7BYsZoc9TJP3SI",
-  authDomain: "chatsite-2ba82.firebaseapp.com",
-  databaseURL: "https://chatsite-2ba82-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "chatsite-2ba82",
-  storageBucket: "chatsite-2ba82.appspot.com",
-  messagingSenderId: "655887521279",
-  appId: "1:655887521279:web:0b63a1f9530996a154c3ca"
-};
-
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
-import { getDatabase, ref, set, get, child } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
+import { getDatabase, ref, set, get, child, push } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
 
 // Cấu hình Firebase
 const firebaseConfig = {
@@ -31,7 +20,7 @@ const auth = getAuth(app); // Khởi tạo Firebase Authentication
 const database = getDatabase(app); // Khởi tạo Firebase Realtime Database
 
 // Thiết lập trạng thái đăng nhập
-auth.onAuthStateChanged(user => {
+onAuthStateChanged(auth, user => {
   if (user) {
     localStorage.setItem('currentUser', user.uid);
     showPostForm();
@@ -67,7 +56,7 @@ document.getElementById('register').addEventListener('submit', e => {
   const email = document.getElementById('registerEmail').value.trim();
   const password = document.getElementById('registerPassword').value.trim();
 
-  auth.createUserWithEmailAndPassword(email, password)
+  createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
       alert('Đăng ký thành công!');
       e.target.reset();
@@ -83,7 +72,7 @@ document.getElementById('login').addEventListener('submit', e => {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value.trim();
 
-  auth.signInWithEmailAndPassword(email, password)
+  signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       alert('Đăng nhập thành công!');
       e.target.reset();
@@ -95,7 +84,7 @@ document.getElementById('login').addEventListener('submit', e => {
 
 // Đăng xuất
 document.getElementById('logoutBtn').addEventListener('click', () => {
-  auth.signOut()
+  signOut(auth)
     .then(() => {
       alert('Đăng xuất thành công!');
     })
@@ -134,16 +123,19 @@ function loadPosts() {
   const postsContainer = document.getElementById('posts');
   postsContainer.innerHTML = '';
 
-  database.ref('posts').on('value', snapshot => {
-    postsContainer.innerHTML = ''; // xóa cũ
+  const postsRef = ref(database, 'posts');
+  get(postsRef).then(snapshot => {
     const posts = snapshot.val();
     if (posts) {
       Object.values(posts).forEach(post => {
         postsContainer.appendChild(createPostElement(post));
       });
     }
+  }).catch(error => {
+    console.error(error);
   });
 }
+
 loadPosts();
 
 // Xử lý đăng bài
@@ -169,9 +161,12 @@ document.getElementById('post').addEventListener('submit', e => {
         image: event.target.result,
         author
       };
-      database.ref('posts').push(newPost).then(() => {
+      const postsRef = ref(database, 'posts');
+      push(postsRef, newPost).then(() => {
         alert('Đăng bài thành công!');
         e.target.reset();
+      }).catch(error => {
+        alert(error.message);
       });
     };
     reader.readAsDataURL(file);
@@ -182,9 +177,12 @@ document.getElementById('post').addEventListener('submit', e => {
       image: '',
       author
     };
-    database.ref('posts').push(newPost).then(() => {
+    const postsRef = ref(database, 'posts');
+    push(postsRef, newPost).then(() => {
       alert('Đăng bài thành công!');
       e.target.reset();
+    }).catch(error => {
+      alert(error.message);
     });
   }
 });
@@ -206,5 +204,3 @@ keys.forEach(key => {
     }, 1000);
   });
 });
-
-
