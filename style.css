@@ -1,0 +1,53 @@
+/* Nền đổi màu mượt */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    transition: background-color 0.5s linear;
+}
+
+/* Chữ tiêu đề đổi màu RGB nhẹ nhàng */
+@keyframes rgbText {
+    0% { color: red; }
+    16% { color: orange; }
+    33% { color: yellow; }
+    50% { color: green; }
+    66% { color: blue; }
+    83% { color: indigo; }
+    100% { color: violet; }
+}
+
+h1, h2, h3 {
+    animation: rgbText 5s infinite;
+}
+
+.post {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    background-color: rgba(255,255,255,0.9);
+}
+
+.post img {
+    max-width: 300px;
+    display: block;
+    margin-top: 10px;
+}
+
+input, textarea {
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
