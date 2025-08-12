@@ -9,6 +9,7 @@ const firebaseConfig = {
   appId: "1:655887521279:web:0b63a1f9530996a154c3ca"
 };
 
+// Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
@@ -99,6 +100,93 @@ document.getElementById('registerBtn').addEventListener('click', () => {
 
 // Tạo phần tử bài viết HTML
 function createPostElement(post) {
-  const
-::contentReference[oaicite:0]{index=0}
- 
+  const postDiv = document.createElement('div');
+  postDiv.className = 'post';
+  const imgTag = post.image ? `<img src="${post.image}" alt="Hình ảnh" style="max-width: 300px;">` : '';
+  postDiv.innerHTML = `
+    <h3>${post.title}</h3>
+    <p>${post.content}</p>
+    ${imgTag}
+    <hr>
+    <small>Đăng bởi: ${post.author}</small>
+  `;
+  return postDiv;
+}
+
+// Tải bài viết từ Firebase Realtime Database
+function loadPosts() {
+  const postsContainer = document.getElementById('posts');
+  postsContainer.innerHTML = '';
+
+  database.ref('posts').on('value', snapshot => {
+    postsContainer.innerHTML = ''; // xóa cũ
+    const posts = snapshot.val();
+    if (posts) {
+      Object.values(posts).forEach(post => {
+        postsContainer.appendChild(createPostElement(post));
+      });
+    }
+  });
+}
+loadPosts();
+
+// Xử lý đăng bài
+document.getElementById('post').addEventListener('submit', e => {
+  e.preventDefault();
+
+  if (!localStorage.getItem('currentUser')) {
+    alert('Bạn cần đăng nhập để đăng bài.');
+    return;
+  }
+
+  const title = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  const file = document.getElementById('postFile').files[0];
+  const author = localStorage.getItem('currentUser');
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const newPost = {
+        title,
+        content,
+        image: event.target.result,
+        author
+      };
+      database.ref('posts').push(newPost).then(() => {
+        alert('Đăng bài thành công!');
+        e.target.reset();
+      });
+    };
+    reader.readAsDataURL(file);
+  } else {
+    const newPost = {
+      title,
+      content,
+      image: '',
+      author
+    };
+    database.ref('posts').push(newPost).then(() => {
+      alert('Đăng bài thành công!');
+      e.target.reset();
+    });
+  }
+});
+
+// Hiệu ứng LED cho các phím
+const keys = document.querySelectorAll('.key');
+const colors = ['#FF3C38', '#38FF8A', '#3C83FF', '#FFD138', '#FF38E0', '#38FFF7'];
+
+keys.forEach(key => {
+  key.addEventListener('click', () => {
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    key.style.backgroundColor = randomColor;
+    key.style.color = '#121212';
+    key.style.boxShadow = `0 0 15px ${randomColor}`;
+    setTimeout(() => {
+      key.style.backgroundColor = '';
+      key.style.color = '';
+      key.style.boxShadow = '';
+    }, 1000);
+  });
+});
