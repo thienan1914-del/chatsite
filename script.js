@@ -1,57 +1,49 @@
-// Biến hue cho đổi màu nền mượt
-let hue = 0;
-setInterval(() => {
-    document.body.style.backgroundColor = `hsl(${hue}, 60%, 90%)`;
-    hue = (hue + 1) % 360;
-}, 50);
+document.getElementById('loginBtn').addEventListener('click', () => {
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('registerForm').style.display = 'none';
+});
 
-function addPost() {
-    let title = document.getElementById('title').value.trim();
-    let content = document.getElementById('content').value.trim();
-    let imageFile = document.getElementById('image').files[0];
+document.getElementById('registerBtn').addEventListener('click', () => {
+  document.getElementById('registerForm').style.display = 'block';
+  document.getElementById('loginForm').style.display = 'none';
+});
 
-    if (!title || !content) {
-        alert("Vui lòng nhập Tiêu đề và Nội dung");
-        return;
-    }
+document.getElementById('login').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  if (storedUser && storedUser.username === username && storedUser.password === password) {
+    alert('Đăng nhập thành công');
+    localStorage.setItem('isLoggedIn', 'true');
+    toggleLoginState();
+  } else {
+    alert('Tên người dùng hoặc mật khẩu không đúng');
+  }
+});
 
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        let imgTag = imageFile ? `<img src="${e.target.result}" alt="Hình ảnh">` : '';
-        document.getElementById('posts').innerHTML = `
-            <div class="post">
-                <h3>${escapeHtml(title)}</h3>
-                <p>${escapeHtml(content)}</p>
-                ${imgTag}
-            </div>
-        ` + document.getElementById('posts').innerHTML; // Hiển thị bài mới lên trên
-    };
+document.getElementById('register').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const username = document.getElementById('registerUsername').value;
+  const password = document.getElementById('registerPassword').value;
+  const user = { username, password };
+  localStorage.setItem('user', JSON.stringify(user));
+  alert('Đăng ký thành công');
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('registerForm').style.display = 'none';
+});
 
-    if (imageFile) {
-        reader.readAsDataURL(imageFile);
-    } else {
-        document.getElementById('posts').innerHTML = `
-            <div class="post">
-                <h3>${escapeHtml(title)}</h3>
-                <p>${escapeHtml(content)}</p>
-            </div>
-        ` + document.getElementById('posts').innerHTML;
-    }
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('isLoggedIn');
+  toggleLoginState();
+});
 
-    // Xóa dữ liệu form
-    document.getElementById('title').value = '';
-    document.getElementById('content').value = '';
-    document.getElementById('image').value = '';
-}
-
-// Hàm đơn giản tránh nhập HTML nguy hiểm (ví dụ <script>)
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
+document.getElementById('post').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const title = document.getElementById('postTitle').value;
+  const content = document.getElementById('postContent').value;
+  const file = document.getElementById('postFile').files[0];
+  const postDiv = document.createElement('div');
+  postDiv.innerHTML = `<h3>${title}</h3><p>${
+::contentReference[oaicite:0]{index=0}
+ 
