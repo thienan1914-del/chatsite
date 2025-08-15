@@ -66,10 +66,19 @@ nav button:hover {
   line-height: 60px;
   border-radius: 10px;
   cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
 .key:hover {
   background-color: #555;
+}
+
+/* Khi phím được nhấn */
+.key.active {
+  background-color: #00ff99;
+  color: #000;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #00ff99;
 }
 
 /* Joy-Con styles */
