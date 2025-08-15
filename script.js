@@ -14,7 +14,7 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // --- AI Chat ---
-const OPENAI_KEY = "YOUR_OPENAI_KEY"; // Thay bằng OpenAI key của bạn
+const OPENAI_KEY = "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";
 
 document.getElementById("sendBtn").addEventListener("click", async () => {
   const input = document.getElementById("userMessage");
@@ -37,6 +37,7 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         messages: [{ role: "user", content: message }]
       })
     });
+
     const data = await res.json();
     const reply = data.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
@@ -46,6 +47,7 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     console.error(err);
   }
 });
+
 
 // --- Lưu bài viết Firebase ---
 document.getElementById('post').addEventListener('submit', e => {
@@ -133,3 +135,4 @@ document.addEventListener('keyup', (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
+
