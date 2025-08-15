@@ -1,4 +1,4 @@
-// --- Phần 1: Firebase ---
+// --- Firebase ---
 const firebaseConfig = {
   apiKey: "AIzaSyC5sIo8_htHOwCq2b25d7BYsZoc9TJP3SI",
   authDomain: "chatsite-2ba82.firebaseapp.com",
@@ -13,90 +13,41 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-// Theo dõi trạng thái đăng nhập
-auth.onAuthStateChanged(user => {
-  if (user) {
-    localStorage.setItem('currentUser', user.uid);
-    showPostForm();
-    loadPosts();
-  } else {
-    localStorage.removeItem('currentUser');
-    showLoginForm();
+// --- AI Chat ---
+const OPENAI_KEY = "YOUR_OPENAI_KEY"; // Thay bằng OpenAI key của bạn
+
+document.getElementById("sendBtn").addEventListener("click", async () => {
+  const input = document.getElementById("userMessage");
+  const message = input.value.trim();
+  if (!message) return;
+
+  const chatBox = document.getElementById("chatBox");
+  chatBox.innerHTML += `<div><b>Bạn:</b> ${message}</div>`;
+  input.value = "";
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENAI_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: message }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
+    chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } catch (err) {
+    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối API.</div>`;
+    console.error(err);
   }
 });
 
-function showPostForm() {
-  document.getElementById('loginForm').style.display = 'none';
-  document.getElementById('registerForm').style.display = 'none';
-  document.getElementById('postForm').style.display = 'block';
-  document.getElementById('logoutBtn').style.display = 'inline-block';
-  document.getElementById('loginBtn').style.display = 'none';
-  document.getElementById('registerBtn').style.display = 'none';
-}
-
-function showLoginForm() {
-  document.getElementById('loginForm').style.display = 'block';
-  document.getElementById('registerForm').style.display = 'none';
-  document.getElementById('postForm').style.display = 'none';
-  document.getElementById('logoutBtn').style.display = 'none';
-  document.getElementById('loginBtn').style.display = 'inline-block';
-  document.getElementById('registerBtn').style.display = 'inline-block';
-}
-
-// Đăng ký
-document.getElementById('register').addEventListener('submit', e => {
-  e.preventDefault();
-  const email = document.getElementById('registerEmail').value.trim();
-  const password = document.getElementById('registerPassword').value.trim();
-
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      alert('Đăng ký thành công!');
-      e.target.reset();
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-});
-
-// Đăng nhập
-document.getElementById('login').addEventListener('submit', e => {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      alert('Đăng nhập thành công!');
-      e.target.reset();
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-});
-
-// Đăng xuất
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  auth.signOut()
-    .then(() => {
-      alert('Đăng xuất thành công!');
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-});
-
-// Chuyển đổi form
-document.getElementById('loginBtn').addEventListener('click', () => {
-  document.getElementById('loginForm').style.display = 'block';
-  document.getElementById('registerForm').style.display = 'none';
-});
-document.getElementById('registerBtn').addEventListener('click', () => {
-  document.getElementById('registerForm').style.display = 'block';
-  document.getElementById('loginForm').style.display = 'none';
-});
-
-// Lưu bài viết vào Firebase
+// --- Lưu bài viết Firebase ---
 document.getElementById('post').addEventListener('submit', e => {
   e.preventDefault();
   const title = document.getElementById('postTitle').value.trim();
@@ -109,8 +60,8 @@ document.getElementById('post').addEventListener('submit', e => {
   }
 
   const postData = {
-    title: title,
-    content: content,
+    title,
+    content,
     author: user.email,
     timestamp: Date.now()
   };
@@ -121,12 +72,10 @@ document.getElementById('post').addEventListener('submit', e => {
       e.target.reset();
       loadPosts();
     })
-    .catch(error => {
-      alert(error.message);
-    });
+    .catch(error => alert(error.message));
 });
 
-// Hiển thị danh sách bài viết
+// --- Hiển thị bài viết ---
 function loadPosts() {
   const postsContainer = document.getElementById('posts');
   postsContainer.innerHTML = '';
@@ -138,7 +87,6 @@ function loadPosts() {
   });
 }
 
-// Tạo phần tử bài viết HTML
 function createPostElement(post) {
   const postElement = document.createElement('div');
   postElement.classList.add('post');
@@ -150,7 +98,7 @@ function createPostElement(post) {
   return postElement;
 }
 
-// --- Phần 2: Nhấn phím thì nháy ---
+// --- Phím nhấn nháy ---
 document.addEventListener('keydown', (event) => {
   const key = event.key.toLowerCase();
   let elementId = null;
@@ -182,3 +130,6 @@ document.addEventListener('keyup', (event) => {
     if (el) el.classList.remove('active');
   }
 });
+
+// --- Tải bài khi mở trang ---
+loadPosts();
