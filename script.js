@@ -48,8 +48,7 @@ document.getElementById('post').addEventListener('submit', e => {
   const title = document.getElementById('postTitle').value.trim();
   const content = document.getElementById('postContent').value.trim();
   const user = auth.currentUser;
-  }
-
+  
   const postData = {
     title,
     content,
@@ -124,6 +123,7 @@ document.addEventListener('keyup', (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
+
 
 
 
