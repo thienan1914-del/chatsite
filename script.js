@@ -11,9 +11,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
-const auth = firebase.auth();
 
-// --- AI Chat ---
+// --- AI Chat với GPT4All local ---
 document.getElementById("sendBtn").addEventListener("click", async () => {
   const input = document.getElementById("userMessage");
   const message = input.value.trim();
@@ -24,25 +23,24 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
   input.value = "";
 
   try {
-    // Gọi proxy server chạy trên localhost:3000
-    const res = await fetch("http://localhost:3000/chat", {
+    // Gọi GPT4All local server (Python/Node) trên localhost:5000
+    const res = await fetch("http://localhost:5000/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }) // Chỉ gửi message
+      body: JSON.stringify({ message })
     });
 
     const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
+    const reply = data.reply || "Xin lỗi, AI không trả lời được.";
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err) {
-    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối proxy server.</div>`;
+    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối server GPT4All.</div>`;
     console.error(err);
   }
 });
 
-
-// --- Lưu bài viết Firebase ---
+// --- Lưu bài viết Firebase (Ẩn danh) ---
 document.getElementById('post').addEventListener('submit', e => {
   e.preventDefault();
   const title = document.getElementById('postTitle').value.trim();
@@ -51,7 +49,7 @@ document.getElementById('post').addEventListener('submit', e => {
   const postData = {
     title,
     content,
-    author: 'Ẩn danh', // thay vì user.email
+    author: 'Ẩn danh',
     timestamp: Date.now()
   };
 
@@ -122,8 +120,3 @@ document.addEventListener('keyup', (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
-
-
-
-
-
