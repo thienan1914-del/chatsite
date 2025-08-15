@@ -47,12 +47,11 @@ document.getElementById('post').addEventListener('submit', e => {
   e.preventDefault();
   const title = document.getElementById('postTitle').value.trim();
   const content = document.getElementById('postContent').value.trim();
-  const user = auth.currentUser;
-  
+
   const postData = {
     title,
     content,
-    author: user.email,
+    author: 'Ẩn danh', // thay vì user.email
     timestamp: Date.now()
   };
 
@@ -123,6 +122,7 @@ document.addEventListener('keyup', (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
+
 
 
 
