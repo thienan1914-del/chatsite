@@ -99,6 +99,16 @@ document.getElementById('registerBtn').addEventListener('click', () => {
 
 // Tạo phần tử bài viết HTML
 function createPostElement(post) {
-  const
-::contentReference[oaicite:0]{index=0}
- 
+  const postElement = document.createElement('div');
+  postElement.classList.add('post');
+
+  postElement.innerHTML = `
+    <h3>${post.title}</h3>
+    <p>${post.content}</p>
+    <small>Đăng bởi: ${post.author || 'Ẩn danh'}</small>
+  `;
+
+  return postElement;
+}
+
+
