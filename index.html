@@ -3,40 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CHATSITE Gaming</title>
+  <title>CHATSITE Gaming + AI</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <header>
-    <h1>CHATSITE</h1>
-    <nav>
-      <button id="loginBtn">Đăng nhập</button>
-      <button id="registerBtn">Đăng ký</button>
-      <button id="logoutBtn" style="display: none;">Đăng xuất</button>
-    </nav>
+    <h1>CHATSITE AI</h1>
   </header>
 
   <main>
-    <section id="loginForm" class="form">
-      <h2>Đăng nhập</h2>
-      <form id="login">
-        <input type="text" id="loginUsername" placeholder="Tên người dùng" required />
-        <input type="password" id="loginPassword" placeholder="Mật khẩu" required />
-        <button type="submit">Đăng nhập</button>
-      </form>
+    <!-- Khu vực chat AI -->
+    <section id="chatAI">
+      <h2>Chat với AI</h2>
+      <div id="chatBox" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:auto;">
+        <div><b>AI:</b> Xin chào! Tôi có thể giúp gì cho bạn?</div>
+      </div>
+      <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." style="width:80%;" />
+      <button id="sendBtn">Gửi</button>
     </section>
 
-    <section id="registerForm" class="form">
-      <h2>Đăng ký</h2>
-      <form id="register">
-        <input type="text" id="registerUsername" placeholder="Tên người dùng" required />
-        <input type="password" id="registerPassword" placeholder="Mật khẩu" required />
-        <button type="submit">Đăng ký</button>
-      </form>
-    </section>
-
-    <section id="postForm" style="display: none;">
+    <!-- Khu vực đăng bài -->
+    <section id="postForm">
       <h2>Đăng bài mới</h2>
       <form id="post">
         <input type="text" id="postTitle" placeholder="Tiêu đề" required />
@@ -47,6 +35,7 @@
       <div id="posts"></div>
     </section>
 
+    <!-- Các phím điều khiển game -->
     <section id="gameKeys">
       <div class="key" id="keyW">W</div>
       <div class="key" id="keyA">A</div>
@@ -55,7 +44,7 @@
       <div class="key" id="keySpace">Space</div>
     </section>
 
-    <!-- Các nút Joy‑Con kiểu Nintendo -->
+    <!-- Các nút Joy-Con kiểu Nintendo -->
     <section id="joyConButtons">
       <div class="joycon-container">
         <div class="joycon left">
@@ -78,14 +67,39 @@
     </section>
   </main>
 
-<!-- Firebase SDKs (compat để dùng cú pháp v8 như firebase.auth()) -->
+<!-- Firebase SDKs nếu cần -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-<!-- File JS của bạn -->
-<script src="script.js" defer></script>
+<!-- JS điều khiển AI Chat -->
+<script>
+  const API_KEY = "AIzaSyBNueebfqtXWLR8Nkhew0kVzp15q1ttzCQ"; // Thay bằng API key AI của bạn
+
+  document.getElementById("sendBtn").addEventListener("click", async () => {
+    const input = document.getElementById("userMessage");
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatBox = document.getElementById("chatBox");
+    chatBox.innerHTML += `<div><b>Bạn:</b> ${message}</div>`;
+    input.value = "";
+
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: message }] }]
+        })
+      });
+      const data = await res.json();
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, AI không trả lời được.";
+      chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (err) {
+      chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối API.</div>`;
+    }
+  });
+</script>
 </body>
 </html>
-
-
