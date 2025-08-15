@@ -48,10 +48,6 @@ document.getElementById('post').addEventListener('submit', e => {
   const title = document.getElementById('postTitle').value.trim();
   const content = document.getElementById('postContent').value.trim();
   const user = auth.currentUser;
-
-  if (!user) {
-    alert('Bạn phải đăng nhập để đăng bài!');
-    return;
   }
 
   const postData = {
@@ -128,5 +124,6 @@ document.addEventListener('keyup', (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
+
 
 
