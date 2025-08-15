@@ -1,4 +1,4 @@
-// Khởi tạo Firebase
+// --- Phần 1: Firebase ---
 const firebaseConfig = {
   apiKey: "AIzaSyC5sIo8_htHOwCq2b25d7BYsZoc9TJP3SI",
   authDomain: "chatsite-2ba82.firebaseapp.com",
@@ -13,7 +13,6 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-// Thiết lập trạng thái đăng nhập
 auth.onAuthStateChanged(user => {
   if (user) {
     localStorage.setItem('currentUser', user.uid);
@@ -24,7 +23,6 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// Hiển thị form đăng bài khi người dùng đã đăng nhập
 function showPostForm() {
   document.getElementById('loginForm').style.display = 'none';
   document.getElementById('registerForm').style.display = 'none';
@@ -34,7 +32,6 @@ function showPostForm() {
   document.getElementById('registerBtn').style.display = 'none';
 }
 
-// Hiển thị form đăng nhập/đăng ký khi người dùng chưa đăng nhập
 function showLoginForm() {
   document.getElementById('loginForm').style.display = 'block';
   document.getElementById('registerForm').style.display = 'none';
@@ -87,7 +84,7 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
     });
 });
 
-// Chuyển đổi giữa form đăng nhập và đăng ký
+// Chuyển đổi form
 document.getElementById('loginBtn').addEventListener('click', () => {
   document.getElementById('loginForm').style.display = 'block';
   document.getElementById('registerForm').style.display = 'none';
@@ -111,4 +108,35 @@ function createPostElement(post) {
   return postElement;
 }
 
+// --- Phần 2: Nhấn phím thì nháy ---
+document.addEventListener('keydown', (event) => {
+  const key = event.key.toLowerCase();
+  let elementId = null;
 
+  if (key === 'w') elementId = 'keyW';
+  if (key === 'a') elementId = 'keyA';
+  if (key === 's') elementId = 'keyS';
+  if (key === 'd') elementId = 'keyD';
+  if (event.code === 'Space') elementId = 'keySpace';
+
+  if (elementId) {
+    const el = document.getElementById(elementId);
+    if (el) el.classList.add('active');
+  }
+});
+
+document.addEventListener('keyup', (event) => {
+  const key = event.key.toLowerCase();
+  let elementId = null;
+
+  if (key === 'w') elementId = 'keyW';
+  if (key === 'a') elementId = 'keyA';
+  if (key === 's') elementId = 'keyS';
+  if (key === 'd') elementId = 'keyD';
+  if (event.code === 'Space') elementId = 'keySpace';
+
+  if (elementId) {
+    const el = document.getElementById(elementId);
+    if (el) el.classList.remove('active');
+  }
+});
