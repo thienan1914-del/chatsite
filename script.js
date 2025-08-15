@@ -14,8 +14,6 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // --- AI Chat ---
-const OPENAI_KEY = "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";
-
 document.getElementById("sendBtn").addEventListener("click", async () => {
   const input = document.getElementById("userMessage");
   const message = input.value.trim();
@@ -26,16 +24,11 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
   input.value = "";
 
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Gọi proxy server chạy trên localhost:3000
+    const res = await fetch("http://localhost:3000/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENAI_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: message }]
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }) // Chỉ gửi message
     });
 
     const data = await res.json();
@@ -43,7 +36,7 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err) {
-    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối API.</div>`;
+    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối proxy server.</div>`;
     console.error(err);
   }
 });
@@ -135,4 +128,5 @@ document.addEventListener('keyup', (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
+
 
