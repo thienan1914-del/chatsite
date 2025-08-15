@@ -13,10 +13,12 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
+// Theo dõi trạng thái đăng nhập
 auth.onAuthStateChanged(user => {
   if (user) {
     localStorage.setItem('currentUser', user.uid);
     showPostForm();
+    loadPosts();
   } else {
     localStorage.removeItem('currentUser');
     showLoginForm();
@@ -94,17 +96,57 @@ document.getElementById('registerBtn').addEventListener('click', () => {
   document.getElementById('loginForm').style.display = 'none';
 });
 
+// Lưu bài viết vào Firebase
+document.getElementById('post').addEventListener('submit', e => {
+  e.preventDefault();
+  const title = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert('Bạn phải đăng nhập để đăng bài!');
+    return;
+  }
+
+  const postData = {
+    title: title,
+    content: content,
+    author: user.email,
+    timestamp: Date.now()
+  };
+
+  database.ref('posts').push(postData)
+    .then(() => {
+      alert('Đăng bài thành công!');
+      e.target.reset();
+      loadPosts();
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+});
+
+// Hiển thị danh sách bài viết
+function loadPosts() {
+  const postsContainer = document.getElementById('posts');
+  postsContainer.innerHTML = '';
+  database.ref('posts').orderByChild('timestamp').once('value', snapshot => {
+    snapshot.forEach(childSnapshot => {
+      const post = childSnapshot.val();
+      postsContainer.appendChild(createPostElement(post));
+    });
+  });
+}
+
 // Tạo phần tử bài viết HTML
 function createPostElement(post) {
   const postElement = document.createElement('div');
   postElement.classList.add('post');
-
   postElement.innerHTML = `
     <h3>${post.title}</h3>
     <p>${post.content}</p>
     <small>Đăng bởi: ${post.author || 'Ẩn danh'}</small>
   `;
-
   return postElement;
 }
 
