@@ -1,47 +1,41 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Chat AI + Blog</title>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    #chatBox { border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto; margin-bottom: 10px; }
-    #posts { margin-top: 20px; }
-    .post { border: 1px solid #aaa; padding: 10px; margin-bottom: 10px; }
-    .key { display: inline-block; width: 40px; height: 40px; border:1px solid #333; margin:2px; text-align:center; line-height:40px; }
-    .active { background: yellow; }
-  </style>
+<meta charset="UTF-8">
+<title>Bàn phím RGB</title>
+<style>
+  body {
+    background: #111;
+    color: #fff;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .keyboard {
+    display: grid;
+    grid-template-columns: repeat(15, 50px);
+    grid-gap: 5px;
+  }
+  .key {
+    width: 50px;
+    height: 50px;
+    background: #222;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    cursor: default;
+    transition: background 0.2s;
+  }
+</style>
 </head>
 <body>
-  <h2>Chat với AI</h2>
-  <div id="chatBox"></div>
-  <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." style="width:70%;">
-  <button id="sendBtn">Gửi</button>
+<div class="keyboard" id="keyboard"></div>
 
-  <h2>Đăng bài viết</h2>
-  <form id="post">
-    <input type="text" id="postTitle" placeholder="Tiêu đề" required><br><br>
-    <textarea id="postContent" placeholder="Nội dung" rows="4" cols="50" required></textarea><br><br>
-    <input type="file" id="postFile"><br><br>
-    <button type="submit">Đăng bài</button>
-  </form>
-
-  <h2>Bài viết</h2>
-  <div id="posts"></div>
-
-  <h2>Phím nhấn nháy</h2>
-  <div>
-    <div class="key" id="keyW">W</div><br>
-    <div class="key" id="keyA">A</div>
-    <div class="key" id="keyS">S</div>
-    <div class="key" id="keyD">D</div><br>
-    <div class="key" id="keySpace">Space</div>
-  </div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
