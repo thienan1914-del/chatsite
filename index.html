@@ -1,78 +1,47 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CHATSITE Gaming + AI</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Chat AI + Blog</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #chatBox { border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto; margin-bottom: 10px; }
+    #posts { margin-top: 20px; }
+    .post { border: 1px solid #aaa; padding: 10px; margin-bottom: 10px; }
+    .key { display: inline-block; width: 40px; height: 40px; border:1px solid #333; margin:2px; text-align:center; line-height:40px; }
+    .active { background: yellow; }
+  </style>
 </head>
 <body>
+  <h2>Chat với AI</h2>
+  <div id="chatBox"></div>
+  <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." style="width:70%;">
+  <button id="sendBtn">Gửi</button>
 
-  <header>
-    <h1>CHATSITE AI</h1>
-  </header>
+  <h2>Đăng bài viết</h2>
+  <form id="post">
+    <input type="text" id="postTitle" placeholder="Tiêu đề" required><br><br>
+    <textarea id="postContent" placeholder="Nội dung" rows="4" cols="50" required></textarea><br><br>
+    <input type="file" id="postFile"><br><br>
+    <button type="submit">Đăng bài</button>
+  </form>
 
-  <main>
-    <!-- Chat AI -->
-    <section id="chatAI">
-      <h2>Chat với AI</h2>
-      <div id="chatBox" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:auto;">
-        <div><b>AI:</b> Xin chào! Tôi có thể giúp gì cho bạn?</div>
-      </div>
-      <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." style="width:80%;" />
-      <button id="sendBtn">Gửi</button>
-    </section>
+  <h2>Bài viết</h2>
+  <div id="posts"></div>
 
-    <!-- Đăng bài Firebase -->
-    <section id="postForm">
-      <h2>Đăng bài mới</h2>
-      <form id="post">
-        <input type="text" id="postTitle" placeholder="Tiêu đề" required />
-        <textarea id="postContent" placeholder="Nội dung" required></textarea>
-        <input type="file" id="postFile" />
-        <button type="submit">Đăng</button>
-      </form>
-      <div id="posts"></div>
-    </section>
+  <h2>Phím nhấn nháy</h2>
+  <div>
+    <div class="key" id="keyW">W</div><br>
+    <div class="key" id="keyA">A</div>
+    <div class="key" id="keyS">S</div>
+    <div class="key" id="keyD">D</div><br>
+    <div class="key" id="keySpace">Space</div>
+  </div>
 
-    <!-- Các phím điều khiển game -->
-    <section id="gameKeys">
-      <div class="key" id="keyW">W</div>
-      <div class="key" id="keyA">A</div>
-      <div class="key" id="keyS">S</div>
-      <div class="key" id="keyD">D</div>
-      <div class="key" id="keySpace">Space</div>
-    </section>
-
-    <!-- Joy-Con Nintendo -->
-    <section id="joyConButtons">
-      <div class="joycon-container">
-        <div class="joycon left">
-          <button class="joy-btn">⬆</button>
-          <div>
-            <button class="joy-btn">◀</button>
-            <button class="joy-btn">▶</button>
-          </div>
-          <button class="joy-btn">⬇</button>
-        </div>
-        <div class="joycon right">
-          <button class="joy-btn">X</button>
-          <div>
-            <button class="joy-btn">Y</button>
-            <button class="joy-btn">A</button>
-          </div>
-          <button class="joy-btn">B</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-
-  <!-- Script chính -->
   <script src="script.js"></script>
 </body>
 </html>
