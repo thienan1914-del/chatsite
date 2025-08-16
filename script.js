@@ -12,8 +12,15 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-// --- AI Chat với GPT4All local ---
-document.getElementById("sendBtn").addEventListener("click", async () => {
+// ==========================
+// --- AI Chat với GPT4All ---
+// ==========================
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+document.getElementById("userMessage").addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage(); // Nhấn Enter để gửi
+});
+
+async function sendMessage() {
   const input = document.getElementById("userMessage");
   const message = input.value.trim();
   if (!message) return;
@@ -23,7 +30,6 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
   input.value = "";
 
   try {
-    // Gọi GPT4All local server (Python/Node) trên localhost:5000
     const res = await fetch("http://localhost:5000/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -33,18 +39,22 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     const data = await res.json();
     const reply = data.reply || "Xin lỗi, AI không trả lời được.";
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err) {
     chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối server GPT4All.</div>`;
     console.error(err);
   }
-});
 
-// --- Lưu bài viết Firebase (Ẩn danh) ---
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ===============================
+// --- Lưu và hiển thị bài viết ---
+// ===============================
 document.getElementById('post').addEventListener('submit', e => {
   e.preventDefault();
   const title = document.getElementById('postTitle').value.trim();
   const content = document.getElementById('postContent').value.trim();
+  if (!title || !content) return alert("Vui lòng nhập đầy đủ tiêu đề và nội dung");
 
   const postData = {
     title,
@@ -55,14 +65,12 @@ document.getElementById('post').addEventListener('submit', e => {
 
   database.ref('posts').push(postData)
     .then(() => {
-      alert('Đăng bài thành công!');
       e.target.reset();
       loadPosts();
     })
-    .catch(error => alert(error.message));
+    .catch(error => alert("Lỗi lưu bài: " + error.message));
 });
 
-// --- Hiển thị bài viết ---
 function loadPosts() {
   const postsContainer = document.getElementById('posts');
   postsContainer.innerHTML = '';
@@ -85,38 +93,27 @@ function createPostElement(post) {
   return postElement;
 }
 
-// --- Phím nhấn nháy ---
-document.addEventListener('keydown', (event) => {
-  const key = event.key.toLowerCase();
-  let elementId = null;
+// ===============================
+// --- Hiệu ứng phím WASD + Space ---
+// ===============================
+const keyMap = {
+  w: "keyW",
+  a: "keyA",
+  s: "keyS",
+  d: "keyD",
+  " ": "keySpace"
+};
 
-  if (key === 'w') elementId = 'keyW';
-  if (key === 'a') elementId = 'keyA';
-  if (key === 's') elementId = 'keyS';
-  if (key === 'd') elementId = 'keyD';
-  if (event.code === 'Space') elementId = 'keySpace';
+document.addEventListener('keydown', e => toggleKey(e, true));
+document.addEventListener('keyup', e => toggleKey(e, false));
 
-  if (elementId) {
-    const el = document.getElementById(elementId);
-    if (el) el.classList.add('active');
+function toggleKey(event, isActive) {
+  const id = keyMap[event.key.toLowerCase()];
+  if (id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("active", isActive);
   }
-});
+}
 
-document.addEventListener('keyup', (event) => {
-  const key = event.key.toLowerCase();
-  let elementId = null;
-
-  if (key === 'w') elementId = 'keyW';
-  if (key === 'a') elementId = 'keyA';
-  if (key === 's') elementId = 'keyS';
-  if (key === 'd') elementId = 'keyD';
-  if (event.code === 'Space') elementId = 'keySpace';
-
-  if (elementId) {
-    const el = document.getElementById(elementId);
-    if (el) el.classList.remove('active');
-  }
-});
-
-// --- Tải bài khi mở trang ---
+// --- Load bài viết khi mở trang ---
 loadPosts();
