@@ -13,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const storage = firebase.storage();
 
-// --- Chat AI ---
+// --- Chat AI (GPT4All API) ---
 document.getElementById("sendBtn").addEventListener("click", async () => {
   const input = document.getElementById("userMessage");
   const message = input.value.trim();
@@ -24,14 +24,18 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
   input.value = "";
 
   try {
-    const res = await fetch("http://localhost:5000/chat", {
+    const res = await fetch("http://localhost:4891/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({
+        model: "Llama 3.2 1B Instruct", // đúng tên model bạn đang chạy
+        messages: [{ role: "user", content: message }]
+      })
     });
 
     const data = await res.json();
-    const reply = data.reply || "Xin lỗi, AI không trả lời được.";
+    const reply = data.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
+
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err) {
@@ -131,3 +135,4 @@ document.addEventListener("keyup", (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
+
