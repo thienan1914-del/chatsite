@@ -28,19 +28,21 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "Llama 3.2 1B Instruct", // đúng tên model bạn đang chạy
+        model: "llama-3.2-1b-instruct", // tên model chuẩn hơn (không có khoảng trắng)
         messages: [{ role: "user", content: message }]
       })
     });
 
+    if (!res.ok) throw new Error("Không kết nối được server GPT4All");
+
     const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
+    const reply = data?.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
 
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err) {
     chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối server GPT4All.</div>`;
-    console.error(err);
+    console.error("Lỗi GPT4All:", err);
   }
 });
 
@@ -53,34 +55,38 @@ document.getElementById("post").addEventListener("submit", async e => {
 
   let fileURL = null;
 
-  if (file) {
-    const storageRef = storage.ref("uploads/" + Date.now() + "_" + file.name);
-    await storageRef.put(file);
-    fileURL = await storageRef.getDownloadURL();
+  try {
+    if (file) {
+      const storageRef = storage.ref("uploads/" + Date.now() + "_" + file.name);
+      await storageRef.put(file);
+      fileURL = await storageRef.getDownloadURL();
+    }
+
+    const postData = {
+      title,
+      content,
+      fileURL,
+      author: "Ẩn danh",
+      timestamp: Date.now()
+    };
+
+    await database.ref("posts").push(postData);
+
+    alert("Đăng bài thành công!");
+    e.target.reset();
+    loadPosts();
+  } catch (error) {
+    alert("Lỗi khi đăng bài: " + error.message);
   }
-
-  const postData = {
-    title,
-    content,
-    fileURL,
-    author: "Ẩn danh",
-    timestamp: Date.now()
-  };
-
-  database.ref("posts").push(postData)
-    .then(() => {
-      alert("Đăng bài thành công!");
-      e.target.reset();
-      loadPosts();
-    })
-    .catch(error => alert(error.message));
 });
 
 // --- Hiển thị bài viết ---
 function loadPosts() {
   const postsContainer = document.getElementById("posts");
   postsContainer.innerHTML = "";
-  database.ref("posts").orderByChild("timestamp").once("value", snapshot => {
+
+  database.ref("posts").orderByChild("timestamp").on("value", snapshot => {
+    postsContainer.innerHTML = "";
     snapshot.forEach(childSnapshot => {
       const post = childSnapshot.val();
       postsContainer.appendChild(createPostElement(post));
@@ -135,4 +141,3 @@ document.addEventListener("keyup", (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
-
