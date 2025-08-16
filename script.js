@@ -24,27 +24,29 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
   input.value = "";
 
   try {
-    const res = await fetch("http://localhost:4891/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "llama3.2", // tên model chuẩn
-        messages: [{ role: "user", content: message }]
-      })
-    });
+  const res = await fetch("http://localhost:4891/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "llama3.2",
+      messages: [{ role: "user", content: message }]
+    })
+  });
 
-    if (!res.ok) throw new Error("Không kết nối được Ollama server");
+  if (!res.ok) throw new Error("Không kết nối được Ollama server");
 
-    const data = await res.json();
-    // Ollama trả về định dạng hơi khác GPT4All
-    const reply = data?.completion || data?.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
+  const data = await res.json();
 
-    chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  } catch (err) {
-    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối Ollama server.</div>`;
-    console.error("Lỗi Ollama:", err);
-  }
+  const messagesArray = Array.isArray(data) ? data : [data];
+  const lastMessage = messagesArray.filter(m => m.done).pop();
+  const reply = lastMessage?.message?.content || "Xin lỗi, AI không trả lời được.";
+
+  chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
+  chatBox.scrollTop = chatBox.scrollHeight;
+} catch (err) {
+  chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối Ollama server.</div>`;
+  console.error("Lỗi Ollama:", err);
+}
 });
 
 // --- Đăng bài (có file ảnh) ---
@@ -142,3 +144,4 @@ document.addEventListener("keyup", (event) => {
 
 // --- Tải bài khi mở trang ---
 loadPosts();
+
