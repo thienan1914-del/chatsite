@@ -13,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const storage = firebase.storage();
 
-// --- Chat AI (GPT4All API) ---
+// --- Chat AI (Ollama Proxy) ---
 document.getElementById("sendBtn").addEventListener("click", async () => {
   const input = document.getElementById("userMessage");
   const message = input.value.trim();
@@ -28,21 +28,22 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "llama-3.2-1b-instruct", // tên model chuẩn hơn (không có khoảng trắng)
+        model: "llama3.2", // tên model chuẩn
         messages: [{ role: "user", content: message }]
       })
     });
 
-    if (!res.ok) throw new Error("Không kết nối được server GPT4All");
+    if (!res.ok) throw new Error("Không kết nối được Ollama server");
 
     const data = await res.json();
-    const reply = data?.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
+    // Ollama trả về định dạng hơi khác GPT4All
+    const reply = data?.completion || data?.choices?.[0]?.message?.content || "Xin lỗi, AI không trả lời được.";
 
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err) {
-    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối server GPT4All.</div>`;
-    console.error("Lỗi GPT4All:", err);
+    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối Ollama server.</div>`;
+    console.error("Lỗi Ollama:", err);
   }
 });
 
@@ -135,7 +136,7 @@ document.addEventListener("keyup", (event) => {
 
   if (elementId) {
     const el = document.getElementById(elementId);
-    if (el) el.classList.remove("active");
+    el.classList.remove("active");
   }
 });
 
