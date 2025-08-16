@@ -11,16 +11,10 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
+const storage = firebase.storage();
 
-// ==========================
-// --- AI Chat với GPT4All ---
-// ==========================
-document.getElementById("sendBtn").addEventListener("click", sendMessage);
-document.getElementById("userMessage").addEventListener("keypress", e => {
-  if (e.key === "Enter") sendMessage(); // Nhấn Enter để gửi
-});
-
-async function sendMessage() {
+// --- Chat AI ---
+document.getElementById("sendBtn").addEventListener("click", async () => {
   const input = document.getElementById("userMessage");
   const message = input.value.trim();
   if (!message) return;
@@ -39,42 +33,50 @@ async function sendMessage() {
     const data = await res.json();
     const reply = data.reply || "Xin lỗi, AI không trả lời được.";
     chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err) {
     chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối server GPT4All.</div>`;
     console.error(err);
   }
+});
 
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// ===============================
-// --- Lưu và hiển thị bài viết ---
-// ===============================
-document.getElementById('post').addEventListener('submit', e => {
+// --- Đăng bài (có file ảnh) ---
+document.getElementById("post").addEventListener("submit", async e => {
   e.preventDefault();
-  const title = document.getElementById('postTitle').value.trim();
-  const content = document.getElementById('postContent').value.trim();
-  if (!title || !content) return alert("Vui lòng nhập đầy đủ tiêu đề và nội dung");
+  const title = document.getElementById("postTitle").value.trim();
+  const content = document.getElementById("postContent").value.trim();
+  const file = document.getElementById("postFile").files[0];
+
+  let fileURL = null;
+
+  if (file) {
+    const storageRef = storage.ref("uploads/" + Date.now() + "_" + file.name);
+    await storageRef.put(file);
+    fileURL = await storageRef.getDownloadURL();
+  }
 
   const postData = {
     title,
     content,
-    author: 'Ẩn danh',
+    fileURL,
+    author: "Ẩn danh",
     timestamp: Date.now()
   };
 
-  database.ref('posts').push(postData)
+  database.ref("posts").push(postData)
     .then(() => {
+      alert("Đăng bài thành công!");
       e.target.reset();
       loadPosts();
     })
-    .catch(error => alert("Lỗi lưu bài: " + error.message));
+    .catch(error => alert(error.message));
 });
 
+// --- Hiển thị bài viết ---
 function loadPosts() {
-  const postsContainer = document.getElementById('posts');
-  postsContainer.innerHTML = '';
-  database.ref('posts').orderByChild('timestamp').once('value', snapshot => {
+  const postsContainer = document.getElementById("posts");
+  postsContainer.innerHTML = "";
+  database.ref("posts").orderByChild("timestamp").once("value", snapshot => {
     snapshot.forEach(childSnapshot => {
       const post = childSnapshot.val();
       postsContainer.appendChild(createPostElement(post));
@@ -83,37 +85,49 @@ function loadPosts() {
 }
 
 function createPostElement(post) {
-  const postElement = document.createElement('div');
-  postElement.classList.add('post');
+  const postElement = document.createElement("div");
+  postElement.classList.add("post");
   postElement.innerHTML = `
     <h3>${post.title}</h3>
     <p>${post.content}</p>
-    <small>Đăng bởi: ${post.author || 'Ẩn danh'}</small>
+    ${post.fileURL ? `<img src="${post.fileURL}" style="max-width:200px; display:block; margin-top:5px;">` : ""}
+    <small>Đăng bởi: ${post.author || "Ẩn danh"}</small>
   `;
   return postElement;
 }
 
-// ===============================
-// --- Hiệu ứng phím WASD + Space ---
-// ===============================
-const keyMap = {
-  w: "keyW",
-  a: "keyA",
-  s: "keyS",
-  d: "keyD",
-  " ": "keySpace"
-};
+// --- Phím nhấn nháy ---
+document.addEventListener("keydown", (event) => {
+  const key = event.key.toLowerCase();
+  let elementId = null;
 
-document.addEventListener('keydown', e => toggleKey(e, true));
-document.addEventListener('keyup', e => toggleKey(e, false));
+  if (key === "w") elementId = "keyW";
+  if (key === "a") elementId = "keyA";
+  if (key === "s") elementId = "keyS";
+  if (key === "d") elementId = "keyD";
+  if (event.code === "Space") elementId = "keySpace";
 
-function toggleKey(event, isActive) {
-  const id = keyMap[event.key.toLowerCase()];
-  if (id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle("active", isActive);
+  if (elementId) {
+    const el = document.getElementById(elementId);
+    if (el) el.classList.add("active");
   }
-}
+});
 
-// --- Load bài viết khi mở trang ---
+document.addEventListener("keyup", (event) => {
+  const key = event.key.toLowerCase();
+  let elementId = null;
+
+  if (key === "w") elementId = "keyW";
+  if (key === "a") elementId = "keyA";
+  if (key === "s") elementId = "keyS";
+  if (key === "d") elementId = "keyD";
+  if (event.code === "Space") elementId = "keySpace";
+
+  if (elementId) {
+    const el = document.getElementById(elementId);
+    if (el) el.classList.remove("active");
+  }
+});
+
+// --- Tải bài khi mở trang ---
 loadPosts();
