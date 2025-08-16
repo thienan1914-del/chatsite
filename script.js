@@ -24,29 +24,26 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
   input.value = "";
 
   try {
-  const res = await fetch("http://localhost:4891/v1/chat/completions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "llama3.2",
-      messages: [{ role: "user", content: message }]
-    })
-  });
+    const res = await fetch("http://localhost:4891/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "llama3.2",
+        messages: [{ role: "user", content: message }]
+      })
+    });
 
-  if (!res.ok) throw new Error("Không kết nối được Ollama server");
+    if (!res.ok) throw new Error("Không kết nối được Ollama server");
 
-  const data = await res.json();
+    const data = await res.json();
+    const reply = data?.reply || "Xin lỗi, AI không trả lời được.";
 
-  const messagesArray = Array.isArray(data) ? data : [data];
-  const lastMessage = messagesArray.filter(m => m.done).pop();
-  const reply = lastMessage?.message?.content || "Xin lỗi, AI không trả lời được.";
-
-  chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
-  chatBox.scrollTop = chatBox.scrollHeight;
-} catch (err) {
-  chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối Ollama server.</div>`;
-  console.error("Lỗi Ollama:", err);
-}
+    chatBox.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } catch (err) {
+    chatBox.innerHTML += `<div><b>AI:</b> Lỗi khi kết nối Ollama server.</div>`;
+    console.error("Lỗi Ollama:", err);
+  }
 });
 
 // --- Đăng bài (có file ảnh) ---
@@ -74,7 +71,6 @@ document.getElementById("post").addEventListener("submit", async e => {
     };
 
     await database.ref("posts").push(postData);
-
     alert("Đăng bài thành công!");
     e.target.reset();
     loadPosts();
@@ -110,38 +106,17 @@ function createPostElement(post) {
 }
 
 // --- Phím nhấn nháy ---
-document.addEventListener("keydown", (event) => {
-  const key = event.key.toLowerCase();
-  let elementId = null;
-
-  if (key === "w") elementId = "keyW";
-  if (key === "a") elementId = "keyA";
-  if (key === "s") elementId = "keyS";
-  if (key === "d") elementId = "keyD";
-  if (event.code === "Space") elementId = "keySpace";
-
-  if (elementId) {
-    const el = document.getElementById(elementId);
-    if (el) el.classList.add("active");
-  }
+document.addEventListener("keydown", event => {
+  const keyMap = { w: "keyW", a: "keyA", s: "keyS", d: "keyD", " ": "keySpace" };
+  const elId = keyMap[event.key.toLowerCase()] || keyMap[event.code === "Space" ? " " : ""];
+  if (elId) document.getElementById(elId)?.classList.add("active");
 });
 
-document.addEventListener("keyup", (event) => {
-  const key = event.key.toLowerCase();
-  let elementId = null;
-
-  if (key === "w") elementId = "keyW";
-  if (key === "a") elementId = "keyA";
-  if (key === "s") elementId = "keyS";
-  if (key === "d") elementId = "keyD";
-  if (event.code === "Space") elementId = "keySpace";
-
-  if (elementId) {
-    const el = document.getElementById(elementId);
-    el.classList.remove("active");
-  }
+document.addEventListener("keyup", event => {
+  const keyMap = { w: "keyW", a: "keyA", s: "keyS", d: "keyD", " ": "keySpace" };
+  const elId = keyMap[event.key.toLowerCase()] || keyMap[event.code === "Space" ? " " : ""];
+  if (elId) document.getElementById(elId)?.classList.remove("active");
 });
 
 // --- Tải bài khi mở trang ---
 loadPosts();
-
